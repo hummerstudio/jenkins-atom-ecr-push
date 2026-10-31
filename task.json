@@ -1,0 +1,127 @@
+{
+  "atomCode": "ecr-push",
+  "name": "Push image to ECR",
+  "version": "1.0.0",
+  "description": "Pushes a saved container image to Amazon ECR (or any Docker Registry V2 registry) over HTTP, without a docker daemon.",
+  "execution": {
+    "packagePath": "ecr-push.jar",
+    "language": "java",
+    "target": "$atom_java_path -cp ecr-push.jar com.jenkinschina.atom.sdk.AtomRunner"
+  },
+  "input": {
+    "registry": {
+      "label": "注册表（如 123456789012.dkr.ecr.us-east-1.amazonaws.com）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "region": {
+      "label": "区域（留空则从注册表域名里取）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "repository": {
+      "label": "仓库名（ECR 仓库，可以带前缀 team/app）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "tag": {
+      "label": "标签（支持 $BUILD_NUMBER 这类变量）",
+      "type": "vuex-input",
+      "default": "latest"
+    },
+    "extraTags": {
+      "label": "额外标签（逗号分隔）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "image": {
+      "label": "镜像来源：docker save 的 tar，或 OCI layout 目录",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "platform": {
+      "label": "平台（镜像里有多架构时必填，如 linux/amd64）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "registryUser": {
+      "label": "注册表用户名（ECR 固定 AWS）",
+      "type": "vuex-input",
+      "default": "AWS"
+    },
+    "ecrEndpoint": {
+      "label": "ECR API 地址（私有端点时才填）",
+      "type": "vuex-input",
+      "default": ""
+    },
+    "verifyAfterWrite": {
+      "label": "推完回读标签并比对摘要",
+      "type": "checkbox",
+      "default": "true"
+    },
+    "timeoutSeconds": {
+      "label": "超时（秒）",
+      "type": "vuex-input",
+      "default": "120"
+    },
+    "registryEndpoint": {
+      "label": "注册表连接地址（私有端点/测试用，留空即用 registry）",
+      "type": "vuex-input",
+      "default": ""
+    }
+  },
+  "output": {
+    "digest": {
+      "type": "string",
+      "description": "清单摘要 sha256:..."
+    },
+    "tag": {
+      "type": "string",
+      "description": "第一个标签"
+    },
+    "tags": {
+      "type": "string",
+      "description": "本次推送的全部标签，逗号分隔"
+    },
+    "repository": {
+      "type": "string",
+      "description": "仓库名"
+    },
+    "registry": {
+      "type": "string",
+      "description": "注册表主机"
+    },
+    "blobsUploaded": {
+      "type": "string",
+      "description": "本次新传的 blob 数"
+    },
+    "blobsReused": {
+      "type": "string",
+      "description": "注册表已有、跳过的 blob 数"
+    },
+    "imageSizeBytes": {
+      "type": "string",
+      "description": "blob 总字节数"
+    },
+    "manifestMediaType": {
+      "type": "string",
+      "description": "清单的 media type"
+    },
+    "verified": {
+      "type": "string",
+      "description": "回读一致时为 true"
+    }
+  },
+  "x-jenkins": {
+    "protocol": "jenkins-1",
+    "requires": {
+      "runner": ">=0.4.0"
+    },
+    "secrets": {
+      "accessKey": "",
+      "secretKey": "",
+      "sessionToken": "",
+      "password": ""
+    }
+  }
+}

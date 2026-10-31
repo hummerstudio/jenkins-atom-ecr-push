@@ -1,0 +1,14 @@
+{
+  "name": "Push image to ECR",
+  "summary": "Pushes a saved container image to Amazon ECR over the registry API — no docker daemon needed.",
+  "author": "hummerstudio",
+  "license": "MIT",
+  "tags": [
+    "official-port",
+    "aws",
+    "ecr",
+    "docker",
+    "registry"
+  ],
+  "homepage": "https://github.com/hummerstudio/jenkins-atom-ecr-push"
+}

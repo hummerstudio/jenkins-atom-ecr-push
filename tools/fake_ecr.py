@@ -235,7 +235,10 @@ class Registry(BaseHTTPRequestHandler):
         if status == 401:
             self.send_header("WWW-Authenticate", 'Basic realm="fake-ecr"')
         self.end_headers()
-        self.wfile.write(raw)
+        if self.command != "HEAD":
+            # HTTP forbids a body on HEAD. Writing one leaves bytes in the connection, and the client then reads
+            # them as the start of the next response: the symptom is a status line glued to a JSON error.
+            self.wfile.write(raw)
 
     def note(self, method):
         log({"server": "registry", "method": method, "path": self.path,

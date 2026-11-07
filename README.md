@@ -10,7 +10,7 @@
 ## 用法
 
 ```bash
-./build.sh && ./tools/smoke.sh
+mvn verify    # 编译、打包到 dist/ecr-push/，再跑 src/test/java/atom/EcrPushIT.java
 ```
 
 输入：
@@ -42,9 +42,9 @@
   摘要比对。答 201 却存了别的东西，这一步会红，归 `THIRD_PART`。
 - blob 已在注册表里（`HEAD` 200）就跳过，所以重推同一个镜像不会重复上传。
 
-## smoke 验的是什么
+## 集成测试验的是什么
 
-`tools/smoke.sh` 起一个假 ECR，两半都是真的。
+`src/test/java/atom/EcrPushIT.java` 起一个假 ECR，两半都是真的。
 
 - **token API**：拿到请求后**自己重算** SigV4（规范化请求、派生签名 key、常量时间比对），
   签名不对、region 不对、没签 x-amz-target，都会回 403；请求体里的 account 也会被断言。

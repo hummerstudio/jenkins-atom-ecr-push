@@ -4,8 +4,11 @@ import com.jenkinschina.atom.sdk.Json;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,7 +61,7 @@ final class ImageSource {
         if (Files.isDirectory(source)) {
             root = source;
         } else {
-            extracted = Files.createTempDirectory("ecr-image-");
+            extracted = createOwnerOnlyTempDirectory("ecr-image-");
             int entries = TarReader.extract(source, extracted);
             log.accept("unpacked " + entries + " entries from " + source.getFileName());
             root = extracted;
@@ -71,6 +74,18 @@ final class ImageSource {
         return Files.exists(layout.resolve("index.json"))
                 ? fromOciLayout(layout, platform, extracted, log)
                 : fromLegacySave(layout, extracted, log);
+    }
+
+    /**
+     * A scratch directory only this user can enter: 0700 from creation, so the unpacked image is never readable by
+     * another account on the agent. Where POSIX modes do not exist the attribute is left off instead of failing.
+     */
+    private static Path createOwnerOnlyTempDirectory(String prefix) throws IOException {
+        if (FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+            return Files.createTempDirectory(prefix,
+                    PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------")));
+        }
+        return Files.createTempDirectory(prefix, new FileAttribute<?>[0]);
     }
 
     /** The layout root, which may be one directory down inside a tarball. */

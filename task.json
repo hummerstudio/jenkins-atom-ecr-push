@@ -122,6 +122,7 @@
       "secretKey": "",
       "sessionToken": "",
       "password": ""
-    }
+    },
+    "category": "artifact"
   }
 }
